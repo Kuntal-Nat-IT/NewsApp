@@ -88,6 +88,7 @@ DATABASES = {
     'ENGINE': 'djongo',
     'ENFORCE_SCHEMA': True,
     'NAME': 'NatIT',
+    # 'NAME': 'newsdb',
     'HOST': 'mongodb+srv://kuntalcbnits:kuntalcbnits@cluster0-wju7q.mongodb.net/test',
     'USER': 'kuntalcbnits',
     'PASSWORD': 'kuntalcbnits',
