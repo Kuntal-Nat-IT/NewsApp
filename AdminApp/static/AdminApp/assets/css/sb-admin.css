@@ -1078,6 +1078,14 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff2dede', end
 .no-resize {
 	resize: none;
 }
+
+.center {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 20%;
+	padding-top: 10px;
+  }
 /********************************************************
 ********************************************************/
 
