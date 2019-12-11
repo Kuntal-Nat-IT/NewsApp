@@ -12,6 +12,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'NewsApp',
+    'AdminApp',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
