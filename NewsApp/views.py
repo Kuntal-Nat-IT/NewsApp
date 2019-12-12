@@ -30,7 +30,9 @@ def LoginApi(request):
                         usrname = request.POST['usrname']
                         psw = request.POST['psw']
                         uobj = models.UserCredentials.objects.get(email=usrname)
-                        return Response("Okay", status=status.HTTP_200_OK)
+                        data = {"success": True}
+                        return JsonResponse(data)
+                        # return Response("Okay", status=status.HTTP_200_OK)
 
                 except Exception as e:
                         print("LoginApi", e)
@@ -45,18 +47,23 @@ def LoginApi(request):
 def RegisterApi(request):
         if request.method == 'POST':
                 try:
-                        fullname = request.POST['fullname']
-                        email = request.POST['email']
-                        username = request.POST['username']
-                        password = request.POST['password']
-                        userimage = request.FILES['userimage']
-                        usercreated = datetime.datetime.now()
-                        lastlogin = datetime.datetime.now()
-
                         serializerObj = signupserializers.RegisterSerializer(data=request.data)
                         if serializerObj.is_valid():
                                 serializerObj.save()
-                                return Response("Okay", status=status.HTTP_200_OK)
+                                try:
+                                        UsrDetailsObj = models.UserDetail.objects.get(email=request.POST['email'])
+                                        usrmail = UsrDetailsObj.email
+                                        usrname = UsrDetailsObj.username
+                                        usrpass = UsrDetailsObj.password
+                                        usr_uni_id = helpPackage.HideMyData(usrmail)
+                                        uobj = models.UserCredentials(email=usrmail,username=usrname,password=usrpass,uni_id=usr_uni_id)
+                                        uobj.save()
+                                        return Response("Okay", status=status.HTTP_200_OK)
+
+                                except Exception as e:
+                                        print(e)
+                                        return Response("Not Okay", status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
                         else:
                                 return Response("Invalid Data", status=status.HTTP_406_NOT_ACCEPTABLE)
 

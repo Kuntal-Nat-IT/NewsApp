@@ -10,11 +10,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'NewsApp',
     'AdminApp',
 ]
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -41,13 +43,20 @@ TEMPLATES = [
 ]
 WSGI_APPLICATION = 'NewsPwaApp.wsgi.application'
 # Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default':
     {
     'ENGINE': 'djongo',
     'ENFORCE_SCHEMA': True,
     # 'NAME': 'NatIT',
-    'NAME': 'newsdb',
+    'NAME': 'kuntalnatit',
     'HOST': 'mongodb+srv://kuntalcbnits:kuntalcbnits@cluster0-wju7q.mongodb.net/test',
     'USER': 'kuntalcbnits',
     'PASSWORD': 'kuntalcbnits',
@@ -80,6 +89,11 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+
+# CORS_ORIGIN_WHITELIST = (
+#          'localhost:3000/'
+#      )
 
 
 print("Hey We are starting your Server \n")
