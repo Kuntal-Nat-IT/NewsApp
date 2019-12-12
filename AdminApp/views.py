@@ -9,3 +9,7 @@ def login(request):
 
 def register(request):
     return render(request,'AdminApp/register.html',context={})
+
+def profile(request):
+    return render(request,'AdminApp/profile.html',context={})
+
