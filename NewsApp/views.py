@@ -23,6 +23,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
+
 @api_view(['POST'])
 def LoginApi(request):
         if request.method == 'POST':
@@ -30,16 +31,28 @@ def LoginApi(request):
                         usrname = request.POST['usrname']
                         psw = request.POST['psw']
                         uobj = models.UserCredentials.objects.get(email=usrname)
-                        data = {"success": True}
-                        return JsonResponse(data)
-                        # return Response("Okay", status=status.HTTP_200_OK)
+                        if uobj.password == psw:
+                                request.session['user_session'] = uobj.uni_id
+                                return_val = CreateUserSession(uobj.email, request.session['user_session'])
+                                if return_val:
+                                        data = {"success": True}
+                                        return JsonResponse(data)
+                                else:
+                                        data = {"success": False}
+                                        return JsonResponse(data)
+                        else:
+                                data = {"success": False}
+                                return JsonResponse(data)
 
                 except Exception as e:
                         print("LoginApi", e)
-                        return Response("Key-Value Error", status=status.HTTP_400_BAD_REQUEST)
+                        data = {"success": False}
+                        return JsonResponse(data)
         
         else:
-                return Response("Not Okay", status=status.HTTP_400_BAD_REQUEST)
+                data = {"success": False}
+                return JsonResponse(data)
+
 
 
 
@@ -47,6 +60,7 @@ def LoginApi(request):
 def RegisterApi(request):
         if request.method == 'POST':
                 try:
+                        usrpass = request.POST['password']
                         serializerObj = signupserializers.RegisterSerializer(data=request.data)
                         if serializerObj.is_valid():
                                 serializerObj.save()
@@ -54,22 +68,65 @@ def RegisterApi(request):
                                         UsrDetailsObj = models.UserDetail.objects.get(email=request.POST['email'])
                                         usrmail = UsrDetailsObj.email
                                         usrname = UsrDetailsObj.username
-                                        usrpass = UsrDetailsObj.password
+                                        usrpass = usrpass
                                         usr_uni_id = helpPackage.HideMyData(usrmail)
                                         uobj = models.UserCredentials(email=usrmail,username=usrname,password=usrpass,uni_id=usr_uni_id)
                                         uobj.save()
-                                        return Response("Okay", status=status.HTTP_200_OK)
+                                        data = {"success": True}
+                                        return JsonResponse(data)
 
                                 except Exception as e:
                                         print(e)
-                                        return Response("Not Okay", status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                                        data = {"success": False}
+                                        return JsonResponse(data)
 
                         else:
-                                return Response("Invalid Data", status=status.HTTP_406_NOT_ACCEPTABLE)
+                                data = {"success": False}
+                                return JsonResponse(data)
 
                 except Exception as e:
                         print("RegisterApi", e)
-                        return Response("Key-Value Error", status=status.HTTP_400_BAD_REQUEST)
+                        data = {"success": False}
+                        return JsonResponse(data)
         
         else:
-                return Response("Not Okay", status=status.HTTP_400_BAD_REQUEST)
+                data = {"success": False}
+                return JsonResponse(data)
+
+
+
+
+# ----------------------------------------- Session Management ---------------------------------------
+def CreateUserSession(mail, session_val):
+        try:
+                todayDate = datetime.datetime.now()
+                session_obj = models.UserSessionTable(user_email=mail, session_value=session_val, \
+                        session_start_date=todayDate, session_end_date=todayDate)
+                session_obj.save()
+                return True
+        except Exception as e:
+                print("Session Create Issue : ", e)
+                return False
+
+
+def CheckUserSession(request):
+        try:
+                user_session = request.session['user_session']
+                data = {"loggedin": True}
+                return JsonResponse(data)
+        except Exception as e:
+                print("Create Session Exception : ", e)
+                data = {"loggedin": False}
+                return JsonResponse(data)
+
+
+def EndUserSession(request):
+        try:
+                user_session = request.session['user_session']
+                del request.session['user_session']
+                data = {"loggedin": True}
+                return JsonResponse(data)
+        except Exception as e:
+                print("End Session Exception : ", e)
+                data = {"loggedin": False}
+                return JsonResponse(data)
