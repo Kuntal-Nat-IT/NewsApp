@@ -124,9 +124,9 @@ def EndUserSession(request):
         try:
                 user_session = request.session['user_session']
                 del request.session['user_session']
-                data = {"loggedin": True}
+                data = {"loggedout": True}
                 return JsonResponse(data)
         except Exception as e:
                 print("End Session Exception : ", e)
-                data = {"loggedin": False}
+                data = {"loggedout": False}
                 return JsonResponse(data)
