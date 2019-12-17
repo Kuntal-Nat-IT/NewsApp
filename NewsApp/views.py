@@ -17,6 +17,7 @@ import json
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from rest_framework.views import APIView
 
 # Serializers
 from .serializers import signupserializers
@@ -210,17 +211,16 @@ class VerifyEmail(APIView):
 
         return render(request, 'NewsApp/email_verified.html', {'message': 'Email verified successfully'})
 
-
-def home(request):
-        number_list = range(1,1000)
-        page = request.Get.get('page', 1)
-        paginator = Paginator(number_list,20)
-        try:
-                numbers = paginator.page(page)
-        except PageNotAnInteger:
-                numbers = paginator.page(1)
-        except EmptyPage:
-                numbers = paginator.page(paginator.num_pages)
-        return render(request,'blog/home.html',{'numbers':numbers})
+# def home(request):
+#         number_list = range(1,1000)
+#         page = request.Get.get('page', 1)
+#         paginator = Paginator(number_list,20)
+#         try:
+#                 numbers = paginator.page(page)
+#         except PageNotAnInteger:
+#                 numbers = paginator.page(1)
+#         except EmptyPage:
+#                 numbers = paginator.page(paginator.num_pages)
+#         return render(request,'blog/home.html',{'numbers':numbers})
 
 
