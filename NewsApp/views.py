@@ -11,7 +11,12 @@ from .import models
 from .import helpPackage
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 import datetime
-from datetime import date
+from datetime import datetime, timezone, timedelta,date
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+import json
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_text
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Serializers
 from .serializers import signupserializers
@@ -124,9 +129,98 @@ def EndUserSession(request):
         try:
                 user_session = request.session['user_session']
                 del request.session['user_session']
-                data = {"loggedout": True}
+                data = {"loggedin": True}
                 return JsonResponse(data)
         except Exception as e:
                 print("End Session Exception : ", e)
-                data = {"loggedout": False}
+                data = {"loggedin": False}
                 return JsonResponse(data)
+
+
+#------------------------------------------- Email verification -------------------------------------------------------------------
+
+class SendVerificationEmail(APIView):
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        email = UserDetail.objects.get(user=request.user).email
+        if email == '':
+            return Response({
+                'ack': '0',
+                'details': 'No email for the user'
+            })
+        user_data = {'username': request.user.username, 'email': email, 'random_string': randomDigits(10)}
+        signer = TimestampSigner()
+        signed_user_data = signer.sign(json.dumps(user_data))
+        current_site = get_current_site(request)
+        mail_subject = 'Email verification for NewsApp'
+        message = render_to_string('NewsApp/activate_email.html',{
+            'user': request.user,
+            'domain': current_site.domain,
+            'user_data': urlsafe_base64_encode(force_bytes(signed_user_data)),
+        })
+        if sendMail(email, message, mail_subject):
+            return Response({
+                'ack': '1',
+                'details': 'Email sent',
+            })
+        else:
+            return Response({
+                'ack': '0',
+                'details': 'Unable to send email',
+            })
+
+
+class VerifyEmail(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, usernameb64):
+
+        try:
+            signed_username = force_text(urlsafe_base64_decode(usernameb64))
+        except (TypeError, ValueError, OverflowError):
+            return render(request, 'NewsApp/email_verified.html', {'message': 'bad url'})
+
+        signer = TimestampSigner()
+        try:
+            user_data = json.loads(signer.unsign(signed_username, max_age=timedelta(hours=24)))
+        except BadSignature:
+            return render(request, 'NewsApp/email_verified.html', {'message': 'bad url'})
+
+        except SignatureExpired:
+            return render(request, 'NewsApp/email_verified.html', {'message': 'url expired'})
+        try:
+
+            account = UserDetail.objects.get(user__username=user_data['username'])
+            if account.email != user_data['email']:
+                return render(request, 'NewsApp/email_verified.html', {'message': 'email does not match'})
+            else:
+                if not account.verifiedEmail:
+                    account.verifiedEmail = True
+                    account.save()
+                    try:
+                        #check if the task is already complete
+                        TaskCompleted.objects.get(task__name='Provide Email Address', user=request.user)
+                    except TaskCompleted.DoesNotExist:
+                        task_completed.send(sender=self.__class__, user_details={'account': account, 'name': 'Provide Email Address'})
+
+        except UserDetail.DoesNotExist:
+            return render(request, 'NewsApp/email_verified.html', {'message': 'no such user'})
+
+        return render(request, 'NewsApp/email_verified.html', {'message': 'Email verified successfully'})
+
+
+def home(request):
+        number_list = range(1,1000)
+        page = request.Get.get('page', 1)
+        paginator = Paginator(number_list,20)
+        try:
+                numbers = paginator.page(page)
+        except PageNotAnInteger:
+                numbers = paginator.page(1)
+        except EmptyPage:
+                numbers = paginator.page(paginator.num_pages)
+        return render(request,'blog/home.html',{'numbers':numbers})
+
+
