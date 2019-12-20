@@ -143,3 +143,5 @@ def EndUserSession(request):
                 print("End Session Exception : ", e)
                 data = {"loggedout": False}
                 return JsonResponse(data)
+
+

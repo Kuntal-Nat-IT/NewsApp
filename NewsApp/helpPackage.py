@@ -43,3 +43,4 @@ def DetectBrowser(request):
         browser = browser_name + " " + browser_version
 
     return browse
+
