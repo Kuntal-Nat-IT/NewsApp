@@ -19,18 +19,25 @@ class UserDetail(models.Model):
     userimage = models.ImageField(upload_to='Image/UserImage/')
     usercreated = models.DateTimeField(auto_now_add=True)
     lastlogin = models.DateTimeField(auto_now_add=True)
+    userphone = models.BigIntegerField(default="9292929292")
+    useraddress = models.TextField(default="Adress ...")
+    aboutuser = models.TextField(default="About Me ...")
+    activeuser = models.BooleanField(default=True)
 
     def __str__(self):
         return self.email 
    
 
 class UserSessionTable(models.Model):
+    fullname = models.CharField(max_length=30, default="User")
+    useriamge = models.TextField(default="/home/Image")
+    uni_id = models.TextField(default="abcd1234", unique="True")
     user_email = models.EmailField(default="a@b.com")
     session_value = models.TextField(default="123abc")
     session_start_date = models.DateTimeField(auto_now_add=True)
     session_end_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.usr_uni_id
+        return self.user_email
 
     

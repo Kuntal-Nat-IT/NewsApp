@@ -14,7 +14,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'NewsApp',
     'AdminApp',
-    'rest_framework.authtoken',
 ]
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
