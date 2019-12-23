@@ -2,7 +2,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^w4jv!*a$lsspno3g3p88a%j8hgwg)z$*p%c-p+-%p%vmh^e&@'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -17,6 +17,7 @@ INSTALLED_APPS = [
 ]
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,10 +95,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 
-# CORS_ORIGIN_WHITELIST = (
-#          'localhost:3000/'
-#      )
-
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000"
+]
 
 print("Hey We are starting your Server \n")
 print("$"*20)

@@ -26,32 +26,40 @@ from rest_framework import status
 
 @api_view(['POST'])
 def LoginApi(request):
-        if request.method == 'POST':
-                try:
-                        usrname = request.POST['usrname']
-                        psw = request.POST['psw']
-                        uobj = models.UserCredentials.objects.get(email=usrname)
-                        if uobj.password == psw:
-                                request.session['user_session'] = uobj.uni_id
-                                return_val = CreateUserSession(uobj.email, request.session['user_session'])
-                                if return_val:
+        try:
+                request.session['user_session']
+                data = {"success": True}
+
+        except Exception as e:
+                if request.method == 'POST':
+                        try:
+                                usrname = request.POST['usrname']
+                                psw = request.POST['psw']
+                                print("usrname > ", usrname, "----", "psw > ", psw)
+                                uobj = models.UserCredentials.objects.get(email=usrname)
+                                if uobj.password == psw:
+                                        try:
+                                                print("creating Sesssion ......")
+                                                request.session['user_session'] = uobj.uni_id
+                                        except Exception as e:
+                                                print(e)
                                         data = {"success": True}
-                                        return JsonResponse(data)
+                                        # return_val = CreateUserSession(uobj.email, request.session['user_session'])
+                                        # if return_val:
+                                        #         data = {"success": True}
+                                        # else:
+                                        #         data = {"success": False}
                                 else:
                                         data = {"success": False}
-                                        return JsonResponse(data)
-                        else:
-                                data = {"success": False}
-                                return JsonResponse(data)
 
-                except Exception as e:
-                        print("LoginApi", e)
+                        except Exception as e:
+                                print("LoginApi", e)
+                                data = {"success": False}
+                
+                else:
                         data = {"success": False}
-                        return JsonResponse(data)
-        
-        else:
-                data = {"success": False}
-                return JsonResponse(data)
+                
+        return JsonResponse(data)
 
 
 
@@ -73,25 +81,82 @@ def RegisterApi(request):
                                         uobj = models.UserCredentials(email=usrmail,username=usrname,password=usrpass,uni_id=usr_uni_id)
                                         uobj.save()
                                         data = {"success": True}
-                                        return JsonResponse(data)
 
                                 except Exception as e:
                                         print(e)
                                         data = {"success": False}
-                                        return JsonResponse(data)
 
                         else:
                                 data = {"success": False}
-                                return JsonResponse(data)
 
                 except Exception as e:
                         print("RegisterApi", e)
                         data = {"success": False}
-                        return JsonResponse(data)
         
         else:
                 data = {"success": False}
-                return JsonResponse(data)
+        
+        return JsonResponse(data)
+
+
+
+
+# ---------------------------------------- Forgot Password -----------------------------------------
+
+@api_view(['POST'])
+def ForgetPasswordRequest(request):
+        try:
+                usrname = request.POST['usrname']
+                request.session['forgetpsw'] = usrname
+                # Send OTP to USER
+                data = {"success": True}
+
+        except Exception as e:
+                data = {"success": False}
+        
+        return JsonResponse(data)
+
+
+def ForgotPasswordSession(request):
+        try:
+                usrname = request.session['forgetpsw']
+                data = {"user": True}
+
+        except Exception as e:
+                data = {"user": True}
+        
+        return JsonResponse(data)
+
+
+@api_view(['POST'])
+def CheckUserOPT(request):
+        try:
+                usrotp = request.POST['usrotp']
+                if int(usrotp) == 1234:
+                        data = {"success": True}
+                else:
+                        data = {"success": False}
+        
+        except Exception as e:
+                data = {"success": False}
+        
+        return JsonResponse(data)
+
+
+@api_view(['POST'])
+def SetNewPassword(request):
+        try:
+                psw1 = request.POST['psw1']
+                psw2 = request.POST['psw2']
+                # logic 
+                data = {"success": True}
+
+        except Exception as e:
+                data = {"success": False}
+        
+        return JsonResponse(data)
+
+# --------------------------------------------------------------------------------------------------
 
 
 
@@ -126,11 +191,11 @@ def CheckUserSession(request):
         try:
                 user_session = request.session['user_session']
                 data = {"loggedin": True}
-                return JsonResponse(data)
         except Exception as e:
                 print("Create Session Exception : ", e)
                 data = {"loggedin": False}
-                return JsonResponse(data)
+        
+        return JsonResponse(data)
 
 
 def EndUserSession(request):
@@ -138,8 +203,10 @@ def EndUserSession(request):
                 user_session = request.session['user_session']
                 del request.session['user_session']
                 data = {"loggedout": True}
-                return JsonResponse(data)
         except Exception as e:
                 print("End Session Exception : ", e)
                 data = {"loggedout": False}
-                return JsonResponse(data)
+        
+        return JsonResponse(data)
+
+# --------------------------------------------------------------------------------------------------
