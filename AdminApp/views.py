@@ -129,3 +129,14 @@ def ShowLoggedInUser(request):
     
     context = {'loggedinuser': loggedinuser}
     return render(request,'AdminApp/loggedinuser.html',context=context)
+
+
+def faq(request):
+    faq = Faq.objects.all()
+    return render(request, 'ContentManagementSystem/faq.html', {'faqs': faq})
+
+
+
+
+
+
