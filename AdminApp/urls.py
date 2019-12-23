@@ -3,7 +3,6 @@ from .import views
 
 
 urlpatterns = [
-   path('home/',views.home,name="home"),
    path('', views.Dashboard, name="admindashboard"),
    path('login/',views.Login,name="adminlogin"),
    path('login/submit', views.Logincontroler, name="loginsubmit"),
@@ -15,5 +14,5 @@ urlpatterns = [
    path('userlist/', views.ShowAllUserList, name="showuserlist"),
    path('user-profile/<slug:slug>/', views.ShowUserProfileData, name="showUserProfile"),
    path('logged-in-userlist/', views.ShowLoggedInUser, name="allloggedinuser"),
-   path('faq/',views.faq,name='faq'),
+   path('faq/',views.faq,name='adminfaq'),
 ]

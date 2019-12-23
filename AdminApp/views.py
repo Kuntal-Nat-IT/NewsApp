@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from NewsApp import models
-from .models import AdminProfile
+from .models import AdminProfile, Faq
 
 
 def Login(request):
@@ -133,7 +133,7 @@ def ShowLoggedInUser(request):
 
 def faq(request):
     faq = Faq.objects.all()
-    return render(request, 'ContentManagementSystem/faq.html', {'faqs': faq})
+    return render(request, 'AdminApp/faq.html', {'faqs': faq})
 
 
 
