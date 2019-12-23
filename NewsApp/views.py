@@ -35,20 +35,22 @@ def LoginApi(request):
                         try:
                                 usrname = request.POST['usrname']
                                 psw = request.POST['psw']
-                                print("usrname > ", usrname, "----", "psw > ", psw)
                                 uobj = models.UserCredentials.objects.get(email=usrname)
                                 if uobj.password == psw:
                                         try:
-                                                print("creating Sesssion ......")
                                                 request.session['user_session'] = uobj.uni_id
+                                                data = {"success": True}
+
                                         except Exception as e:
-                                                print(e)
-                                        data = {"success": True}
+                                                print("Session Error : ", e)
+                                                data = {"success": False}
+
                                         # return_val = CreateUserSession(uobj.email, request.session['user_session'])
                                         # if return_val:
                                         #         data = {"success": True}
                                         # else:
                                         #         data = {"success": False}
+
                                 else:
                                         data = {"success": False}
 
