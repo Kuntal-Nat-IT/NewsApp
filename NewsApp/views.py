@@ -145,3 +145,19 @@ def EndUserSession(request):
                 return JsonResponse(data)
 
 
+#---------------------------------------------Pagination---------------------------------------------------------------#
+
+def home(request):
+        number_list = range(1,1000)
+        page = request.Get.get('page', 1)
+        paginator = Paginator(number_list,20)
+        try:
+                numbers = paginator.page(page)
+        except PageNotAnInteger:
+                numbers = paginator.page(1)
+        except EmptyPage:
+                numbers = paginator.page(paginator.num_pages)
+        return render(request,'blog/home.html',{'numbers':numbers})
+
+
+

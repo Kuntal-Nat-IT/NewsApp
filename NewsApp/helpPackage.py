@@ -32,6 +32,7 @@ def GetIPLocationPC(request):
     return ip
 
 
+
 def DetectBrowser(request):
     agent = request.environ.get('HTTP_USER_AGENT')
     browser = httpagentparser.detect(agent)
