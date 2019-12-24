@@ -40,4 +40,22 @@ class UserSessionTable(models.Model):
     def __str__(self):
         return self.user_email
 
-    
+
+class ArticleReader(models.Model):
+    articleid = models.TextField(default="123")
+    image = models.ImageField(upload_to="Image/ArticleImage")
+   # image2 = models.ImageField(upload_to="Image/ArticleImage")
+   # image3 = models.ImageField(upload_to="Image/ArticleImage")
+   # Image4 = models.ImageField(upload_to="Image/ArticleImage")
+   # Image5 = models.ImageField(upload_to="Image/ArticleImage")
+    heading = models.TextField(default="ABCD")
+    body = models.TextField(default="XYZ")
+    categories = models.TextField(default="default")
+    createdOn = models.DateTimeField(auto_now_add=True)
+
+
+#     # class Meta:
+#     #     verbose_name_plural = 'Article of users'
+
+    def __str__(self):
+        return self.articleid   
