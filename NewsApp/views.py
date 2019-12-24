@@ -101,8 +101,6 @@ def RegisterApi(request):
         return JsonResponse(data)
 
 
-
-
 # ---------------------------------------- Forgot Password -----------------------------------------
 
 @api_view(['POST'])
@@ -223,7 +221,48 @@ def home(request):
                 numbers = paginator.page(1)
         except EmptyPage:
                 numbers = paginator.page(paginator.num_pages)
-        return render(request,'blog/home.html',{'numbers':numbers})
+        return render(request,'blog/home.html',{'numbers':numbers}
 
+
+
+#-----------------------------------Article Reader-------------------------#
+
+@api_view(['POST'])
+def ArticleApi(request):
+        if request.method == 'POST':
+                try:
+                        
+                        serializerObj =  ArticleReaderSerialize.RegisterSerializer(data=request.data)
+                        if serializerObj.is_valid():
+                                serializerObj.save()
+                                try:
+                                        UsrDetailsObj = models.UserDetail.objects.get(email=request.POST['email'])
+                                        usrmail = UsrDetailsObj.email
+                                        usrname = UsrDetailsObj.username
+                                        image = UsrDetailsObj.image
+                                        heading = UsrDetailsObj.heading
+                                        body = UsrDetailsObj.body
+                                        categories = UsrDetailsObj.categories
+                                        usrpass = usrpass
+                                        usr_uni_id = helpPackage.HideMyData(usrmail)
+                                        uobj = models.UserCredentials(email=usrmail,username=usrname,password=usrpass,uni_id=usr_uni_id)
+                                        uobj.save()
+                                        data = {"success": True}
+
+                                except Exception as e:
+                                        print(e)
+                                        data = {"success": False}
+
+                        else:
+                                data = {"success": False}
+
+                except Exception as e:
+                        print("ArticleApi", e)
+                        data = {"success": False}
+        
+        else:
+                data = {"success": False}
+        
+        return JsonResponse(data)
 
 

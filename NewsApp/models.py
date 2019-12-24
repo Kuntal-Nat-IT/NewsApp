@@ -54,8 +54,10 @@ class ArticleReader(models.Model):
     createdOn = models.DateTimeField(auto_now_add=True)
 
 
-#     # class Meta:
-#     #     verbose_name_plural = 'Article of users'
+     # class Meta:
+     #     verbose_name_plural = 'Article of users'
 
     def __str__(self):
-        return self.articleid   
+        return self.articleid 
+
+

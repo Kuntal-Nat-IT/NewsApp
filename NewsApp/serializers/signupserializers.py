@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.core.files.images import get_image_dimensions
 from ..models import UserDetail,ArticleReader
+from ..import helpPackage
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -24,7 +25,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ArticleReaderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArticleReader
-        fields = ['articleid', 'image', 'heading' ,'body', 'categories', 'createdon']
+        fields = ['image', 'heading' ,'body', 'categories', 'createdon']
+        k = helpPackage.Big_Number_Generator()
+        articleid = k
+
 
         def validate_image(self,image):
             return image
@@ -34,6 +38,9 @@ class ArticleReaderSerializer(serializers.ModelSerializer):
             return body
         def validate_categories(self,categories):
             return categories
+
+
+
 
         
     
