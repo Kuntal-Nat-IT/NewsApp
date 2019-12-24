@@ -225,5 +225,48 @@ def home(request):
                 numbers = paginator.page(paginator.num_pages)
         return render(request,'blog/home.html',{'numbers':numbers})
 
+#----------------------------------------add feed----------------------------------------------------------#
+
+def addFeed(request):
+    if request.method == 'POST':
+        user = request.user
+        if ("desc" in request.POST):
+            description= request.POST.get("desc")
+            if not description:
+                return HttpResponseRedirect(reverse('NewsaApp:home'))
+            else:
+                feed = Feed.objects.create(content=description, user=user)
+                feed.save()
+                return HttpResponseRedirect(reverse('NewsApp:home')) 
+        else:
+            request.session['msg'] = 'Could not find the user'
+            return HttpResponseRedirect(reverse('NewsApp:home'))
+    else:
+        request['msg'] = 'Soemthing went wrong'
+        return HttpResponseRedirect(reverse('NewsApp:home'))
 
 
+
+#---------------------------------------add comment---------------------------------------------------#
+
+
+def addComment(request):
+    if request.method == 'POST':
+        if ("commentText" in request.POST):
+            commentText= request.POST.get("commentText")
+            if not commentText:
+                return HttpResponseRedirect(reverse('NewsApp:home'))
+            feedId = request.POST.get("feedId")
+            feed = Feed.objects.filter(id=feedId)
+            user = request.user
+            if (feed):
+                feed = feed[0]
+                comment = Comment.objects.create( comment=commentText, feed=feed, user=user)
+                comment.save()
+                return JsonResponse({'success' : True, 'msg' : 'comment added'})
+            else:
+                return JsonResponse({'success' : False, 'msg' : 'no such feed'})
+        else:
+            return JsonResponse({'success' : False, 'msg' : 'did not get the comment text'})
+    else:
+        return JsonResponse({'success' : False, 'msg' : 'Something went wrong'})
